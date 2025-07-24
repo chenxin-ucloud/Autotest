@@ -1,0 +1,309 @@
+CreateIpv6Gateway:
+  - name: 创建 IPv6 网关成功
+    request:
+      Action: CreateIpv6Gateway
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      VPCId: vnet-xxxxx
+      Name: ""
+      Tag: ""
+      Remark: ""
+    expected:
+      Action: CreateIpv6GatewayResponse
+      RetCode: 0
+      Ipv6GatewayId: "xxxxx"
+  - name: 创建 IPv6 网关失败 - VPC 不支持 IPv6
+    request:
+      Action: CreateIpv6Gateway
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      VPCId: vnet-invalid
+      Name: ""
+      Tag: ""
+      Remark: ""
+    expected:
+      Action: CreateIpv6GatewayResponse
+      RetCode: 1  # 假设错误码为 1
+      message: "目标 VPC 不支持 IPv6"
+
+DeleteIpv6Gateway:
+  - name: 删除 IPv6 网关成功
+    request:
+      Action: DeleteIpv6Gateway
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      Ipv6GatewayId: ipv6gw-2ze3jv4gpdzdfkaqc31pw
+    expected:
+      Action: DeleteIpv6GatewayResponse
+      RetCode: 0
+  - name: 删除 IPv6 网关失败 - 网关不存在
+    request:
+      Action: DeleteIpv6Gateway
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      Ipv6GatewayId: ipv6gw-invalid
+    expected:
+      Action: DeleteIpv6GatewayResponse
+      RetCode: 2  # 假设错误码为 2
+      message: "指定的 IPv6 网关不存在"
+
+ModifyIpv6Gateway:
+  - name: 修改 IPv6 网关成功
+    request:
+      Action: ModifyIpv6Gateway
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      Ipv6GatewayId: ipv6gw-2ze3jv4gpdzdfkaqc31pw
+      Name: "test"
+      Tag: "test"
+      Remark: "test"
+    expected:
+      Action: ModifyIpv6GatewayResponse
+      RetCode: 0
+  - name: 修改 IPv6 网关失败 - 网关不存在
+    request:
+      Action: ModifyIpv6Gateway
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      Ipv6GatewayId: ipv6gw-invalid
+      Name: "test"
+      Tag: "test"
+      Remark: "test"
+    expected:
+      Action: ModifyIpv6GatewayResponse
+      RetCode: 2  # 假设错误码为 2
+      message: "指定的 IPv6 网关不存在"
+
+DescribeIpv6Gateways:
+  - name: 查询已创建的 IPv6 网关成功
+    request:
+      Action: DescribeIpv6Gateways
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      VPCId: vnet-xxxxx
+      Ipv6GatewayIds: "ipv6gw-2ze3jv4gpdzdfkaqc31pw"
+      Limit: 20
+      Offset: 1
+    expected:
+      TotalCount: 200
+      IPv6GateWayInfos:
+        - Name: "dddddd"
+          Description: "xxxx"
+          Tag: "default"
+          VPCId: "vnet-2zerqjp3g4zd4gswkqhyy"
+          CreateTime: "2025-02-12T07:05:53Z"
+          Ipv6GatewayId: "ipv6gw-2ze3jv4gpdzdfkaqc31pw"
+  - name: 查询已创建的 IPv6 网关失败 - VPC 不存在
+    request:
+      Action: DescribeIpv6Gateways
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      VPCId: vnet-invalid
+      Ipv6GatewayIds: "ipv6gw-2ze3jv4gpdzdfkaqc31pw"
+      Limit: 20
+      Offset: 1
+    expected:
+      Action: DescribeIpv6GatewaysResponse
+      RetCode: 3  # 假设错误码为 3
+      message: "指定的 VPC 不存在"
+
+DescribeIpv6GatewayAttribute:
+  - name: 查询指定 IPv6 网关的详细信息成功
+    request:
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      VPCId: "vpc-2ze0qjoodpke45li2g1bn"
+      SubnetId: "subnet-joodpke45li2"
+      Ipv6GatewayId: "ipv6gw-2zeoc9wi666v437mdr7f6"
+    expected:
+      Ipv6GatewayId: "xxx"
+      Description: ""
+      Name: "MyIPv6Gateway"
+      Tag: "Production"
+      VPCId: ""
+      SubnetId: "subnet-xyz123"
+      CreateTime: 1700000000
+      TotalCount: 2
+      IPv6AddressInfos:
+        - IPv6AddressId: "ipv6-001"
+          IPv6Address: "2001:db8::1"
+          SubnetId: "subnet-xyz123"
+          PayMode: "bandwidth"
+          Bandwidth: 100
+          ObjectId: "instance-001"
+          OperatorName: "ChinaMobile"
+          Status: "Public"
+          Expire: "Expired"
+          ExpireTime: 1730000000
+          AutoRenew: "Yes"
+  - name: 查询指定 IPv6 网关的详细信息失败 - 网关不存在
+    request:
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      VPCId: "vpc-2ze0qjoodpke45li2g1bn"
+      SubnetId: "subnet-joodpke45li2"
+      Ipv6GatewayId: "ipv6gw-invalid"
+    expected:
+      Action: DescribeIpv6GatewayAttributeResponse
+      RetCode: 2  # 假设错误码为 2
+      message: "指定的 IPv6 网关不存在"
+
+AllocateIpv6InternetBandwidth:
+  - name: 为 IPv6 地址购买公网带宽成功
+    request:
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      Ipv6GatewayId: "ipv6gw-2ze3jv4gpdzdfkaqc31pw"
+      Ipv6AddressId: "ipv6-001"
+      PayMode: "Bandwidth"
+      ChargeType: "Month"
+      Quantity: 1
+      Bandwidth: 100
+      Name: "test"
+      Remark: "test"
+      Tag: "test"
+    expected:
+      Action: AllocateIpv6InternetBandwidthResponse
+      RetCode: 0
+      InternetBandwidthId: "xxxx"
+      Ipv6Address: "2001:db8::1"
+      Ipv6AddressId: "ipv6-001"
+      RequestId: "xxxx"
+  - name: 为 IPv6 地址购买公网带宽失败 - 网关不存在
+    request:
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      Ipv6GatewayId: "ipv6gw-invalid"
+      Ipv6AddressId: "ipv6-001"
+      PayMode: "Bandwidth"
+      ChargeType: "Month"
+      Quantity: 1
+      Bandwidth: 100
+      Name: "test"
+      Remark: "test"
+      Tag: "test"
+    expected:
+      Action: AllocateIpv6InternetBandwidthResponse
+      RetCode: 2  # 假设错误码为 2
+      message: "指定的 IPv6 网关不存在"
+
+DeleteIpv6InternetBandwidth:
+  - name: 删除公网带宽成功
+    request:
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      InternetBandwidthId: "xxxx"
+    expected:
+      Action: DeleteIpv6InternetBandwidthResponse
+      RetCode: 0
+  - name: 删除公网带宽失败 - 带宽不存在
+    request:
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      InternetBandwidthId: "invalid"
+    expected:
+      Action: DeleteIpv6InternetBandwidthResponse
+      RetCode: 4  # 假设错误码为 4
+      message: "指定的公网带宽不存在"
+
+ModifyIpv6InternetBandwidth:
+  - name: 修改 IPv6 地址的公网带宽值成功
+    request:
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      InternetBandwidthId: "xxxx"
+      Bandwidth: 200
+    expected:
+      Action: ModifyIpv6InternetBandwidthResponse
+      RetCode: 0
+  - name: 修改 IPv6 地址的公网带宽值失败 - 带宽不存在
+    request:
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      InternetBandwidthId: "invalid"
+      Bandwidth: 200
+    expected:
+      Action: ModifyIpv6InternetBandwidthResponse
+      RetCode: 4  # 假设错误码为 4
+      message: "指定的公网带宽不存在"
+
+DescribeIpv6InternetBandwidth:
+  - name: 查询 IPv6 地址的公网带宽信息成功
+    request:
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      Ipv6GatewayId: "ipv6gw-2ze3jv4gpdzdfkaqc31pw"
+      InternetBandwidthIds: ["xxxx"]
+    expected:
+      Action: DescribeIpv6InternetBandwidthResponse
+      RetCode: 0
+      InternetBandwidthInfos:
+        - InternetBandwidthId: "xxxx"
+          Ipv6Address: "2001:db8::1"
+          Ipv6GatewayId: "ipv6gw-2ze3jv4gpdzdfkaqc31pw"
+          VPCId: "vnet-xxxxx"
+          PayMode: "Bandwidth"
+          Bandwidth: 100
+          OperatorName: "ChinaMobile"
+          Name: "test"
+          Remark: "test"
+          Tag: "test"
+          AutoRenew: "Yes"
+          ChargeType: "Month"
+          ExpireTime: 1730000000
+          Expire: "UnExpired"
+          CreateTime: 1700000000
+  - name: 查询 IPv6 地址的公网带宽信息失败 - 网关不存在
+    request:
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      Ipv6GatewayId: "ipv6gw-invalid"
+      InternetBandwidthIds: ["xxxx"]
+    expected:
+      Action: DescribeIpv6InternetBandwidthResponse
+      RetCode: 2  # 假设错误码为 2
+      message: "指定的 IPv6 网关不存在"
+
+GetIPv6BandwidthRange:
+  - name: 查询 IPv6 带宽值范围成功
+    request:
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      OperatorNames: ["ChinaMobile"]
+      PayModes: ["Bandwidth"]
+    expected:
+      Action: GetIPv6BandwidthRangeResponse
+      RetCode: 0
+      InternetBandwidthRangeInfos:
+        - OperatorName: "ChinaMobile"
+          PayMode: "Bandwidth"
+          BandwidthMax: 1000
+          BandwidthMin: 10
+  - name: 查询 IPv6 带宽值范围失败 - 线路不存在
+    request:
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+      OperatorNames: ["invalid"]
+      PayModes: ["Bandwidth"]
+    expected:
+      Action: GetIPv6BandwidthRangeResponse
+      RetCode: 5  # 假设错误码为 5
+      message: "指定的线路不存在"
+
+GetIpv6BandwidthPrice:
+  - name: 查询 IPv6 带宽价格成功
+    request:
+      Region: cn-bj2
+      ProjectId: org-1xkdeb
+    expected:
+      Action: GetIpv6BandwidthPriceResponse
+      RetCode: 0
+      # 这里应补充具体的价格信息结构
+  - name: 查询 IPv6 带宽价格失败 - 项目不存在
+    request:
+      Region: cn-bj2
+      ProjectId: "invalid"
+    expected:
+      Action: GetIpv6BandwidthPriceResponse
+      RetCode: 6  # 假设错误码为 6
+      message: "指定的项目不存在"
