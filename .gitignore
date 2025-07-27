@@ -1,0 +1,19 @@
+# 忽略 Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# 忽略日志文件
+*.log
+
+# 忽略pytest缓存文件
+.pytest_cache/
+
+# 忽略 VS Code 配置（可选）
+.vscode/
+
+# 忽略 pytest-html 产生的报告文件
+report.html
+
+# 忽略 pytest-html 产生的静态资源文件
+assets/
