@@ -115,7 +115,7 @@ test_cases:
         channel: 1
         request_uuid: "e1fewvsca241981764ddw-81qwe-005"
     expected:
-      RetCode: 0  # 实际可能需要根据API行为调整
+      RetCode: "!=0"  # 必填参数为空时应该返回错误码
       Action: "DescribeEIPResponse"
 
   - case_id: "TC006"
@@ -133,10 +133,14 @@ test_cases:
         Limit: -1
         request_uuid: "e1fewvsca241981764ddw-81qwe-006"
     expected:
-      RetCode: 0  # 实际可能需要根据API行为调整
+      RetCode: "!=0"  # 无效参数时应该返回错误码
       Action: "DescribeEIPResponse"
 
-# 测试数据准备
+# 该片段用于集中管理测试中常用的有效/无效EIP ID和IP等数据，便于维护和复用。
+# 若要实现case中data的动态引用，可采用如下方式：
+# 1. 在data中使用占位符（如 ${test_data.valid_eip_ids[0]} ），
+# 2. 在测试代码中渲染/替换这些占位符为test_data中的实际值（如用Jinja2模板或自定义解析逻辑）。
+# 这样修改test_data的值会自动影响所有引用它的用例参数，实现数据驱动和复用。
 test_data:
   valid_eip_ids:
     - "eip-1emm2ltcp5vm"
