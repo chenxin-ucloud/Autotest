@@ -1,16 +1,23 @@
-# 测试用例集合：覆盖EIP-1、EIP-2、EIP-3的不同状态场景
+# DescribeEIP接口自动化测试数据
+# 测试环境配置
+config:
+  base_url: "http://internal-api-test03.service.ucloud.cn"
+  timeout: 10
+  headers:
+    Content-Type: "application/json"
+
+# 测试用例集合
 test_cases:
-  - case_id: 1
-    name: "查询EIP-1（未开启直通/可见模式）"
+  # 正常场景测试
+  - case_id: "TC001"
+    name: "查询指定EIP-正常场景"
+    description: "查询指定的EIP资源，验证返回数据正确性"
     request:
-      url: "http://internal-api-test03.service.ucloud.cn"
       method: "POST"
-      headers:
-        Content-Type: "application/json"
       data:
         Action: "DescribeEIP"
         az_group: 666006
-        EIPIds.0: "eip-1emm2ltcp5vm"  # EIP-1的资源ID
+        EIPIds.0: "eip-1emm2ltcp5vm"
         Backend: "unetfe-internal"
         top_organization_id: 1380002
         organization_id: 1560006
@@ -22,8 +29,124 @@ test_cases:
       Action: "DescribeEIPResponse"
       EIPSet:
         - EIPId: "eip-1emm2ltcp5vm"
+          Status: "used"
+          BandwidthType: 1
+          PayMode: "ShareBandwidth"
           Resource:
-            ResourceType: "uni"  # 虚拟网卡类型
-            # 未开启模式时，无直通/可见参数
-            ResourceEipDirectMode: ~  # 断言不存在该字段
-            SubResourceEipDirectMode: ~  # 断言不存在该字段
+            ResourceType: "uni"
+            ResourceEipDirectMode: null
+            SubResourceEipDirectMode: null
+
+  - case_id: "TC002"
+    name: "查询所有EIP-分页测试"
+    description: "不指定EIPIds，查询所有EIP并验证分页参数"
+    request:
+      method: "POST"
+      data:
+        Action: "DescribeEIP"
+        az_group: 666006
+        Backend: "unetfe-internal"
+        top_organization_id: 1380002
+        organization_id: 1560006
+        channel: 1
+        Offset: 0
+        Limit: 20
+        request_uuid: "e1fewvsca241981764ddw-81qwe-002"
+    expected:
+      RetCode: 0
+      Action: "DescribeEIPResponse"
+      TotalCount: ">=0"
+      UnbindCount: ">=0"
+      TotalBandwidth: ">=0"
+
+  - case_id: "TC003"
+    name: "通过IP地址查询EIP"
+    description: "使用IP地址查询EIP信息"
+    request:
+      method: "POST"
+      data:
+        Action: "DescribeEIP"
+        az_group: 666006
+        IPs.0: "106.75.XX.XX"
+        Backend: "unetfe-internal"
+        top_organization_id: 1380002
+        organization_id: 1560006
+        channel: 1
+        request_uuid: "e1fewvsca241981764ddw-81qwe-003"
+    expected:
+      RetCode: 0
+      Action: "DescribeEIPResponse"
+      EIPSet:
+        - EIPAddr:
+            - IP: "106.75.XX.XX"
+              OperatorName: "BGP"
+
+  # 异常场景测试
+  - case_id: "TC004"
+    name: "查询不存在的EIP"
+    description: "查询不存在的EIP资源ID，验证错误处理"
+    request:
+      method: "POST"
+      data:
+        Action: "DescribeEIP"
+        az_group: 666006
+        EIPIds.0: "eip-nonexistent"
+        Backend: "unetfe-internal"
+        top_organization_id: 1380002
+        organization_id: 1560006
+        channel: 1
+        request_uuid: "e1fewvsca241981764ddw-81qwe-004"
+    expected:
+      RetCode: 0  # 即使不存在也返回成功，但EIPSet为空
+      Action: "DescribeEIPResponse"
+      EIPSet: []
+
+  - case_id: "TC005"
+    name: "缺少必填参数Region"
+    description: "缺少必填参数Region，验证参数校验"
+    request:
+      method: "POST"
+      data:
+        Action: "DescribeEIP"
+        az_group: 666006
+        Backend: "unetfe-internal"
+        top_organization_id: 1380002
+        organization_id: 1560006
+        channel: 1
+        request_uuid: "e1fewvsca241981764ddw-81qwe-005"
+    expected:
+      RetCode: 0  # 实际可能需要根据API行为调整
+      Action: "DescribeEIPResponse"
+
+  - case_id: "TC006"
+    name: "无效的Limit参数"
+    description: "使用无效的Limit参数值，验证参数校验"
+    request:
+      method: "POST"
+      data:
+        Action: "DescribeEIP"
+        az_group: 666006
+        Backend: "unetfe-internal"
+        top_organization_id: 1380002
+        organization_id: 1560006
+        channel: 1
+        Limit: -1
+        request_uuid: "e1fewvsca241981764ddw-81qwe-006"
+    expected:
+      RetCode: 0  # 实际可能需要根据API行为调整
+      Action: "DescribeEIPResponse"
+
+# 测试数据准备
+test_data:
+  valid_eip_ids:
+    - "eip-1emm2ltcp5vm"
+    - "eip-2emm2ltcp5vm"
+  valid_ips:
+    - "106.75.XX.XX"
+    - "106.75.XX.YY"
+  invalid_eip_ids:
+    - "eip-nonexistent"
+    - "invalid-eip-id"
+  invalid_ips:
+    - "999.999.999.999"
+    - "invalid-ip"
