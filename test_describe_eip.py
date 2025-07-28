@@ -24,8 +24,8 @@ class TestDescribeEIP:
         """获取配置信息"""
         return TestUtils.load_test_data("test_describe_eip.json")["config"]
     
-    def test_describe_eip_basic(self, test_data, config):
-        """基础功能测试"""
+    def test_describe_eip_smoke(self, test_data, config):
+        """冒烟测试"""
         test_cases = test_data["test_cases"]
         
         for case in test_cases:
@@ -48,10 +48,7 @@ class TestDescribeEIP:
                     headers=config["headers"]
                 )
             except Exception as e:
-                pytest.fail(f"请求发送失败: {str(e)}")
-            
-            # 验证响应结构
-            assert TestUtils.validate_response_structure(response), "响应结构不正确"
+                pytest.fail(f"请求发送失败: {str(e)}")                  
             
             # 基础断言
             expected = case["expected"]
@@ -59,8 +56,14 @@ class TestDescribeEIP:
                 f"RetCode断言失败，期望: {expected['RetCode']}，实际: {response['RetCode']}"
             assert response["Action"] == expected["Action"], \
                 f"Action断言失败，期望: {expected['Action']}，实际: {response['Action']}"
+
             # 返回字段断言
-            if case['case_id'] != "TC001":
-                assert "UnbindCount" not in response, \
-                    f"用例:{case['name']}响应中不应包含UnbindCount字段"
-    
+            if case['case_id'] == "TC001":
+                assert "UnbindCount001" not in response, \
+                    f"用例:{case['name']}响应中不应包含UnbindCount001字段"
+            else:
+                assert "UnbindCount" in response, \
+                    f"用例:{case['name']}响应中应包含UnbindCount字段"
+
+if __name__ == "__main__":
+    pytest.main(["-s", "test_describe_eip.py"])

@@ -51,26 +51,4 @@ class TestUtils:
         except requests.exceptions.RequestException as e:
             logging.error(f"API请求失败: {e}")
             raise
-    
-    @staticmethod
-    def validate_response_structure(response: Dict[str, Any]) -> bool:
-        """验证响应结构"""
-        required_fields = ["RetCode", "Action"]
-        return all(field in response for field in required_fields)
-    
-        """比较EIP数据，返回差异列表"""
-        differences = []
         
-        for key, expected_value in expected.items():
-            if key not in actual:
-                differences.append(f"缺少字段: {key}")
-                continue
-            
-            actual_value = actual[key]
-            
-            if expected_value is None and actual_value is not None:
-                differences.append(f"字段 {key} 应该为None，实际为: {actual_value}")
-            elif expected_value is not None and actual_value != expected_value:
-                differences.append(f"字段 {key} 不匹配，期望: {expected_value}，实际: {actual_value}")
-        
-        return differences 
