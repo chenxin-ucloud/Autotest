@@ -17,3 +17,5 @@ report.html
 
 # 忽略 pytest-html 产生的静态资源文件
 assets/
+
+reports/
