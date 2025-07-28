@@ -6,24 +6,28 @@ import logging
 from typing import Dict, Any, List
 import requests
 from config import TestConfig
+import json
 
 class TestUtils:
     """测试工具类"""
     
     @staticmethod
     def generate_request_uuid() -> str:
-        """生成请求UUID"""
-        return f"{str(uuid.uuid4()).replace('-', '')[:20]}-{str(uuid.uuid4()).replace('-', '')[:4]}"
-    
-    @staticmethod
-    def load_test_data(yaml_file: str) -> Dict[str, Any]:
-        """加载YAML测试数据"""
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        yaml_path = os.path.join(current_dir, yaml_file)
+        """生成请求UUID，格式如: 7937bcfc-c99c-438b-ace7-9dd3f0ebdb3c"""
+        return str(uuid.uuid4())
         
+    @staticmethod
+    def load_test_data(data_file: str) -> Dict[str, Any]:
+        """加载测试数据，支持JSON和YAML"""
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(current_dir, data_file)
         try:
-            with open(yaml_path, "r", encoding="utf-8") as f:
-                data = yaml.safe_load(f)
+            if data_file.endswith('.json'):
+                with open(file_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+            else:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    data = yaml.safe_load(f)
             return data
         except Exception as e:
             logging.error(f"加载测试数据失败: {e}")
@@ -54,8 +58,6 @@ class TestUtils:
         required_fields = ["RetCode", "Action"]
         return all(field in response for field in required_fields)
     
-    @staticmethod
-    def compare_eip_data(expected: Dict[str, Any], actual: Dict[str, Any]) -> List[str]:
         """比较EIP数据，返回差异列表"""
         differences = []
         
