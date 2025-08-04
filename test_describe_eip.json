@@ -1,34 +1,25 @@
 {
-  "_comment1": "接口自动化测试数据",
   "config": {
-    "base_url": "https://api.ucloud.cn/?Action=DescribeEIPWithAllNum",
+    "base_url": "http://internal-api-test03.service.ucloud.cn",
+    "method": "POST",
     "timeout": 10,
     "headers": {
-      "Content-Type": "application/json",
-      "Cookie": "is_dark_theme_on=0; channel_key=; das_session=e22b3fc9-5e53-44ac-a8b1-bceabf2a2fa4; U_USER_EMAIL=xin.chen%40ucloud.cn; U_COMPANY_ID=50907769; U_USER_ID=50808287; U_MANAGER=devopsforcrm%40ucloud.cn; U_JWT_TOKEN=eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTM3OTUxNDgsImp0aSI6IkNoNVRaa2QxMTBYQ2VOTzA0ZFJVRDYiLCJpYXQiOjE3NTM3MDg3NDgsInN1YiI6InVjczppYW06OjUwOTA3NzY5OnVzZXIvNTA4MDgyODciLCJyb290Ijp0cnVlLCJzZCI6e319.aNMUURwYhWtLtJrkAScdTDOmj7B1EfEnt8JorVPVgKOAiojYqHpTaSQjvy9wOvgHysTj3UcLRghjdJI-VWh8og; U_CSRF_TOKEN=3755a3b1d064556995fb088bf6b1a404; U_CHANNEL_ID=1; c_project_xin_chen_ucloud_cn={%22ProjectId%22:%22org-d32zeg%22%2C%22ProjectName%22:%22%E9%BB%98%E8%AE%A4%E9%A1%B9%E7%9B%AE%22}; c_region_xin_chen_ucloud_cn={%22Region%22:%22cn-sh2%22%2C%22Zone%22:%22$%22}; c_last_region_xin_chen_ucloud_cn={%22Region%22:%22cn-sh2%22%2C%22Zone%22:%22cn-sh2-01%22}",
-      "u-csrf-token": "3755a3b1d064556995fb088bf6b1a404"
+      "Content-Type": "application/json"
     }
   },
   "test_cases": [
     {
       "case_id": "TC001",
-      "name": "查询eip总数",
-      "description": "查询eip总数",
-      "request": {
-        "method": "POST",
-        "data": {
-          "ProjectId": "org-d32zeg",
-          "Region": "cn-sh2",
-          "Limit": 300,
-          "Offset": 0,
-          "Action": "DescribeEIPWithAllNum",
-          "_user": "xin.chen@ucloud.cn",
-          "_timestamp": 1753708775771
-        }
+      "name": "查询eip详情",
+      "request_data": {
+        "Action": "DescribeEIP",
+        "EIPIds.0": "eip-1ewhawjk5bjw",
+        "Offset": 0,
+        "Limit": 300
       },
       "expected": {
         "RetCode": 0,
-        "Action": "DescribeEIPWithAllNumResponse"
+        "Action": "DescribeEIPResponse"
       }
     }
   ]

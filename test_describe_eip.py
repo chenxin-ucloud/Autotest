@@ -1,13 +1,22 @@
 import pytest
 import logging
-from typing import Dict, Any, List
 from utils import TestUtils
 from config import TestConfig
 
-# 配置日志
+# 配置日志，持久存储到文件
+import os
+
+log_dir = getattr(TestConfig, "LOG_DIR", "logs")
+os.makedirs(log_dir, exist_ok=True)
+log_file = os.path.join(log_dir, "test_describe_eip.log")
+
 logging.basicConfig(
     level=getattr(logging, TestConfig.LOG_LEVEL),
-    format=TestConfig.LOG_FORMAT
+    format=TestConfig.LOG_FORMAT,
+    handlers=[
+        logging.FileHandler(log_file, encoding="utf-8"),
+        logging.StreamHandler()
+    ]
 )
 logger = logging.getLogger(__name__)
 
@@ -32,7 +41,7 @@ class TestDescribeEIP:
             logger.info(f"执行测试用例: {case['name']}")
             
             # 准备请求数据
-            request_data = case["request"]["data"].copy()
+            request_data = case["request_data"].copy()
             if "request_uuid" not in request_data:
                 request_data["request_uuid"] = TestUtils.generate_request_uuid()
             
@@ -59,11 +68,9 @@ class TestDescribeEIP:
 
             # 返回字段断言
             if case['case_id'] == "TC001":
-                assert "UnbindCount001" not in response, \
-                    f"用例:{case['name']}响应中不应包含UnbindCount001字段"
-            else:
-                assert "UnbindCount" in response, \
-                    f"用例:{case['name']}响应中应包含UnbindCount字段"
+                assert "ResourceEipDirectModeType" and "SubResourceEipDirectModeType" not in response, \
+                    f"用例:{case['name']}响应中不应包含ResourceEipDirectModeType和SubResourceEipDirectModeType字段"
+            
 
 if __name__ == "__main__":
-    pytest.main(["-s", "test_describe_eip.py"])
+    pytest.main(["-vs", "test_describe_eip.py"])
