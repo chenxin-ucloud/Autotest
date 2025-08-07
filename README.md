@@ -27,13 +27,21 @@ Autotest/
 2. **运行全部测试并生成 Allure 报告**
    ```bash
    python test_runner.py
-   # 或手动运行
-   pytest --alluredir reports/allure_json --clean-alluredir testcases/
-   allure generate reports/allure_json -o reports/allure_html --clean
+   ```
+   # 或手动运行单个用例
+   ```bash
+   python -m testcases.test_describe_eip
    ```
 
 3. **查看报告**
-   - 打开 `reports/allure_html/index.html` 查看可视化测试报告。
+   - 启动本地服务： 
+   ```bash
+   allure serve reports/allure_json
+   ```
+   # 或者
+   ```bash
+   allure open reports/allure_html
+   ```
 
 ## 测试用例开发
 
