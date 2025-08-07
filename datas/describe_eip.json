@@ -13,9 +13,12 @@
       "name": "查询eip详情",
       "request_data": {
         "Action": "DescribeEIP",
-        "EIPIds.0": "eip-1ewhawjk5bjw",
-        "Offset": 0,
-        "Limit": 300
+        "Backend": "unetfe-internal",
+        "az_group": 666006,
+        "top_organization_id": 1620004,
+        "organization_id": 1620009,
+        "channel": 1,
+        "EIPIds.0": "eip-1ewhawjk5bjw"
       },
       "expected": {
         "RetCode": 0,
