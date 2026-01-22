@@ -20,6 +20,9 @@ class JsonDataLoader:
         return json_data.get("test_cases", [])
 
     @staticmethod
-    def get_config(json_data: Dict) -> Dict:
-        """从JSON数据中提取配置信息"""
-        return json_data.get("config", {})
+    def get_config(api_name: str) -> Dict:
+        """从config.py中获取指定API的配置信息"""
+        # 延迟导入避免循环导入
+        from comms.config import get_api_config
+        return get_api_config(api_name)
+

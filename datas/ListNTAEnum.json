@@ -1,0 +1,15 @@
+{
+  "test_cases": [
+    {
+      "case_id": "TC001",
+      "name": "获取NTA枚举值-全部参数正确",
+      "request_data": {
+        "Action": "ListNTAEnum"
+      },
+      "expected": {
+        "RetCode": 0,
+        "Action": "ListNTAEnumResponse"
+      }
+    }
+  ]
+}
