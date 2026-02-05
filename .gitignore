@@ -21,3 +21,10 @@ assets/
 reports/
 
 logs/
+
+comms/config.py
+
+datas/
+
+testcases/
+
