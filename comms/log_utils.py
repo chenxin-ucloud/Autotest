@@ -4,8 +4,11 @@ from comms.constants import INFO_FILE, ERROR_FILE
 
 def get_logger():
     # 第二步：创建日志对象
-    logger = logging.getLogger()
+    logger = logging.getLogger("autotest")
+    if logger.handlers:
+        return logger
     logger.setLevel('DEBUG')  # 代表获取DEBUG及DEBUG级别以上的内容
+    logger.propagate = False
 
     # 第三步：设置输出方向
     sh1 = logging.StreamHandler()
